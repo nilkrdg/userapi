@@ -64,16 +64,8 @@ userRouter.route('/users')
 const SEND_UPDATED_DOC = true;
 userRouter.route('/users/:id')
     .get((req, res) => {
-
-        User.findById(req.params.id, (err, user) => {
-            if(err)
-            {
-                console.log(err);
-                res.status(500).send(err);
-            }else{
-                res.json(user);
-            }
-        });
+        res.locals.session = req.session;
+        res.render('userDetails');
     })
     .delete((req, res) => {
         User.findByIdAndRemove(req.params.id, (err, user) => {
@@ -130,7 +122,7 @@ app.post('/',(req, res) =>
                     req.flash('success', 'Authentication successful');
                     //res.redirect('/api/users/'+user.id);
 
-                    res.render('user', { flash: req.flash() });
+                    res.render('welcome', { flash: req.flash() });
                 }
                 else{
                     req.flash('error', 'Username or password is incorrect');

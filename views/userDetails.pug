@@ -1,0 +1,34 @@
+doctype
+html(lang='en')
+    head
+        title Your Profile
+    body
+        div
+            p ID  #{session.user._id}
+            p Username  #{session.user.username}
+            p First Name  #{session.user.firstName}
+            p Last Name  #{session.user.lastName}
+            p Email  #{session.user.email}
+            form(method='put')
+p
+    label(for='username') Username
+    input(type='text', name='username')
+p
+    label(for='firstName') FirstName
+    input(type='text', name='firstName')
+p
+    label(for='lastName') LastName
+    input(type='text', name='lastName')
+p
+    label(for='email') Email
+    input(type='text', name='email')
+p
+    label(for='oldPassword') Old Password
+    input(type='password', name='oldPassword')
+p
+    label(for='newPassword') New Password
+    input(type='password', name='newPassword')
+p
+    label(for='confirmNewPassword') Confirm New Password
+    input(type='password', name='confirmNewPassword')
+    input(type='submit')

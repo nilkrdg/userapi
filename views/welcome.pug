@@ -3,9 +3,10 @@ html(lang='en')
     head
         title Hello!
     body
-        h1 Welcome to Nil's authenticated Node.JS Express Server
+        h1 Hi #{session.user.firstName} #{session.user.lastName}
         p Navigate to
             ul
                 li: a(href="/api/users") All users
                 li: a(href="/api/users/" + session.user.id) Your profile
+
 
