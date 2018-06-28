@@ -19,6 +19,7 @@
     "gulp": "^3.9.1",
     "gulp-nodemon": "^2.2.1",
     "jsonwebtoken": "^8.3.0",
+    "method-override": "^2.3.10",
     "mongoose": "^5.1.4",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",

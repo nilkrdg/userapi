@@ -4,7 +4,8 @@ const express = require('express');
     session = require('express-session'),
     flash = require('connect-flash'),
     routes = require('./lib/routes'),
-        apiRoutes = require('./lib/apiRoutes');
+    apiRoutes = require('./lib/apiRoutes'),
+    methodOverride = require('method-override');
 
 const db = mongoose.connect('mongodb://localhost/userAPI');
 
@@ -23,6 +24,15 @@ app.use(session({ secret: 'example' }));
 app.set('views', './views');
 app.set('view engine', 'pug');
 
+
+app.use(methodOverride(function (req, res) {
+    if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+        // look in urlencoded POST bodies and delete it
+        var method = req.body._method;
+        delete req.body._method;
+        return method
+    }
+}));
 
 //Connect routes starting with api
 app.use('/api', apiRoutes);
