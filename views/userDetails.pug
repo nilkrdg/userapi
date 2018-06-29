@@ -32,6 +32,14 @@ html(lang='en')
         label(for='newPassword') New Password
         input(type='password', name='newPassword')
         p
-        label(for='confirmNewPassword') Confirm New Password
-        input(type='password', name='confirmNewPassword')
-        input(type='submit')
+        label(for='confirmPassword') Confirm New Password
+        input(type='password', name='confirmPassword')
+        p
+        input(type='submit' value ='update my profile')
+each message in flash
+            h4(style="color: red;") #{message}
+p
+p
+form(method='post', action='/api/users/' + session.user._id)
+    input(type='hidden', name='_method', value='DELETE')
+    input(type='submit' value='delete my profile')

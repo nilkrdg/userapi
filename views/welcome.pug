@@ -8,5 +8,7 @@ html(lang='en')
             ul
                 li: a(href="/api/users") All users
                 li: a(href="/api/users/" + session.user.id) Your profile
+                each message in flash
+                    h4(style="color: green;") #{message}
 
 

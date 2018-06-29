@@ -34,12 +34,18 @@ let UserModel = new Schema({
 });
 
 UserModel.pre('save', function(next) {
-    var user = this;
+    let user = this;
 
     // only hash the password if it has been modified (or is new)
     if (!user.isModified('password')) return next();
 
     // generate a salt
+    user.hashPassword(next);
+});
+
+UserModel.methods.hashPassword = function(next)
+{
+    let user = this;
     bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
         if (err) return next(err);
 
@@ -52,7 +58,7 @@ UserModel.pre('save', function(next) {
             next();
         });
     });
-});
+}
 
 UserModel.methods.comparePassword = function(password, callback) {
     bcrypt.compare(password, this.password, function(err, isMatch) {
