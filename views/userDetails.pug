@@ -4,15 +4,15 @@ html(lang='en')
         title Your Profile
     body
         div
-            p ID  #{session.user._id}
-            p Username  #{session.user.username}
-            p First Name  #{session.user.firstName}
-            p Last Name  #{session.user.lastName}
-            p Email  #{session.user.email}
+            p ID  #{user._id}
+            p Username  #{user.username}
+            p First Name  #{user.firstName}
+            p Last Name  #{user.lastName}
+            p Email  #{user.email}
 
 
-    form(method='post', action='/api/users/'+session.user._id)
-        input(type='hidden', name='_method', value='PUT')
+    form(method='post', action='/api/users/' + user._id)
+        input(type='hidden', name='_method', value='PATCH')
         p
         label(for='username') Username
         input(type='text', name='username')
@@ -40,6 +40,6 @@ each message in flash
             h4(style="color: red;") #{message}
 p
 p
-form(method='post', action='/api/users/' + session.user._id)
+form(method='post', action='/api/users/' + user._id)
     input(type='hidden', name='_method', value='DELETE')
     input(type='submit' value='delete my profile')
