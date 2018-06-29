@@ -6,6 +6,7 @@ html(lang='en')
 h1 All Users
 ul
     each user in users
+        p ID #{user._id}
         p Username #{user.username}
         p First Name #{user.firstName}
         p Last Name #{user.lastName}
