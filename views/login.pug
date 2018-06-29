@@ -1,8 +1,9 @@
 doctype
 html(lang='en')
     head
-        title Login/Register
+        title Login
     body
+
         form(method='post')
             p
                 label(for='username') Username
@@ -10,6 +11,9 @@ html(lang='en')
             p
                 label(for='password') Password
                 input(type='password', name='password')
-            input(type='submit')
+            input(type='submit' value='Log in')
+            p
+            a(href="/signup") Sign Up
 each message in flash
      h4(style="color: red;") #{message}
+

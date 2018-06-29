@@ -1,0 +1,28 @@
+doctype
+html(lang='en')
+    head
+        title Sign Up
+    body
+form(method='post', action='/signup')
+    p
+    label(for='username') Username
+    input(type='text', name='username')
+    p
+    label(for='firstName') FirstName
+    input(type='text', name='firstName')
+    p
+    label(for='lastName') LastName
+    input(type='text', name='lastName')
+    p
+    label(for='email') Email
+    input(type='text', name='email')
+    p
+    label(for='password') Password
+    input(type='password', name='password')
+    p
+    label(for='confirmPassword') Confirm Password
+    input(type='password', name='confirmPassword')
+    p
+    input(type='submit' value ='create my profile')
+each message in flash
+    h4(style="color: red;") #{message}

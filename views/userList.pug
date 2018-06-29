@@ -1,0 +1,15 @@
+doctype
+html(lang='en')
+    head
+        title All Users
+    body
+h1 All Users
+ul
+    each user in users
+        p Username #{user.username}
+        p First Name #{user.firstName}
+        p Last Name #{user.lastName}
+        p Email  #{user.email}
+        p -------------------------
+    else
+        li There are no values
