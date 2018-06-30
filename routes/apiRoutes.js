@@ -19,16 +19,16 @@ apiRoutes.route('/users/:id')
             if(err)
             {
                 let response = {
-                    message: "User cannot be retrieved"
+                    message: HttpStatus.getStatusText(HttpStatus.INTERNAL_SERVER_ERROR)
                 };
-                return res.status(400).json(response);
+                return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(response);
             }
             else if(!user)
             {
                 let response = {
-                    message: "User not found"
+                    message: HttpStatus.getStatusText(HttpStatus.NOT_FOUND)
                 };
-                return res.status(404).json(response);
+                return res.status(HttpStatus.NOT_FOUND).json(response);
             }
             return res.status(HttpStatus.OK).json(user);
         });
@@ -47,7 +47,7 @@ apiRoutes.route('/users/:id')
                     message: "User not found",
                     id: req.params.id
                 };
-                return res.status(400).json(response);
+                return res.status(HttpStatus.NOT_FOUND).json(response);
             }
             let response = {
                 message: "User successfully deleted",
@@ -90,8 +90,14 @@ function updateUser(req, res)
     }
 
     //Fetch user document
-    User.findById(req.params.id, (err, user) =>{
+    User.findById(req.params.id, (err, user) => {
+        if (!user) {
 
+            let response = {
+                message:  HttpStatus.getStatusText(HttpStatus.NOT_FOUND)
+            };
+            return res.status(HttpStatus.NOT_FOUND).json(response);
+        }
         //compare old password entry with the current password
         user.comparePassword(req.body.oldPassword, (err, isMatched) => {
             if(err) {
@@ -182,6 +188,13 @@ function findByIdAndUpdate(req, res)
                 const defaultMessage = 'Update operation failed!';
                 let response = getErrorMessage(defaultMessage, err.message, userRequestData);
                 return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send(response);
+            }
+            else if(!user)
+            {
+                let response = {
+                    message:  HttpStatus.getStatusText(HttpStatus.NOT_FOUND)
+                };
+                return res.status(HttpStatus.NOT_FOUND).json(response);
             }
             return res.status(HttpStatus.OK).json(user);
         }
