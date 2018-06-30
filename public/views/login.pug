@@ -5,15 +5,18 @@ html(lang='en')
     body
 
         form(method='post')
-            p
-                label(for='username') Username
+            label(for='username') Username
+            - if (typeof(username) !== 'undefined')
+                input(type='text', name='username' value=username)
+            - else
                 input(type='text', name='username')
             p
-                label(for='password') Password
-                input(type='password', name='password')
-            input(type='submit' value='Log in')
+            label(for='password') Password
+            input(type='password', name='password')
             p
-            a(href="/signup") Sign Up
-each message in flash
-     h4(style="color: red;") #{message}
+            input(type='submit' value='Log in')
+        p
+        a(href="/signup") Sign Up
+
+        h4(style="color: red;") #{message}
 

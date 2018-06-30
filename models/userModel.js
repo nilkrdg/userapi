@@ -1,8 +1,7 @@
 const mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     bcrypt = require('bcrypt'),
-    SALT_WORK_FACTOR = 10; //Single salt value is used for simplicity,
-// this might be enhanced with using different salt for each user
+    SALT_WORK_FACTOR = require('../config').salt;
 
 let UserModel = new Schema({
     username:{
@@ -43,6 +42,12 @@ UserModel.pre('save', function(next) {
     user.hashPassword(next);
 });
 
+UserModel.methods.login = function(username, password, next)
+{
+
+
+};
+
 UserModel.methods.hashPassword = function(next)
 {
     let user = this;
@@ -58,7 +63,7 @@ UserModel.methods.hashPassword = function(next)
             next();
         });
     });
-}
+};
 
 UserModel.methods.comparePassword = function(password, callback) {
     bcrypt.compare(password, this.password, function(err, isMatch) {

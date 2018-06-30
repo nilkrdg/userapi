@@ -2,7 +2,22 @@ const User = require('../models/userModel');
 const rp = require('request-promise');
 const HttpStatus = require('http-status-codes');
 
+
 let routes = require('express').Router();
+
+function startSession(session, user, token)
+{
+    req.session.authenticated = true;
+    req.session.user = response.user;
+    req.session.token = response.token;
+    res.locals.session = req.session;
+};
+
+function deleteSession(session)
+{
+
+};
+
 
 // middleware to use for all requests
 routes.use((req, res, next) => {
@@ -20,7 +35,8 @@ routes.route('/userList')
         let options = {
             uri: 'http://localhost:8080/api/users',
             headers: {
-                'User-Agent': 'Request-Promise'
+                'User-Agent': 'Request-Promise',
+                'Authorization': req.session.token
             },
             json: true // Automatically parses the JSON string in the response
         };
@@ -32,7 +48,14 @@ routes.route('/userList')
             })
             .catch(function (err) {
                 console.log(err);
-                res.render('error');
+                if(err.statusCode === HttpStatus.UNAUTHORIZED)
+                {
+                    deleteSession(req.session);
+                    res.locals.session = req.session;
+                    res.redirect('/');
+                }
+                else
+                res.render('error', {message :  HttpStatus.getStatusText(HttpStatus.INTERNAL_SERVER_ERROR)});
             });
     });
 
@@ -40,7 +63,7 @@ routes.route('/')
     .get((req, res) =>
     {
         if(!req.session.authenticated)
-            res.render('login', { flash: req.flash() });
+            res.render('login', { username: '' });
         else
         {
             res.locals.session = req.session;
@@ -49,31 +72,36 @@ routes.route('/')
     })
     .post((req, res) =>
     {
-        User.findOne({"username":req.body.username},(err, user) => {
-            if(err || !user)
-            {
-                req.flash('error', 'User not found');
-                res.redirect('/');
+        if(!req.body.username)
+        {
+            return res.render('login', {message: 'Username field is empty!'});
+        }
 
-            }else{
-                user.comparePassword(req.body.password, (err, isMatched) => {
-                    if (err){
-                        req.flash('error', 'Username or password is incorrect');
-                        res.redirect('/');
-                    }
-                    if(isMatched) {
-                        req.session.authenticated = true;
-                        req.session.user = user;
-                        res.locals.session = req.session;
-                        res.render('welcome');
-                    }
-                    else{
-                        req.flash('error', 'Username or password is incorrect');
-                        res.redirect('/');
-                    }
-                });
-            }
-        });
+        if(!req.body.password)
+        {
+            return res.render('login', {message: 'Password field is empty!', username: req.body.username});
+        }
+
+        let options = {
+            uri: 'http://localhost:8080/api/login',
+            method: 'POST',
+            body: req.body,
+            headers: {
+                'User-Agent': 'Request-Promise'
+            },
+            json: true // Automatically parses the JSON string in the response
+        };
+
+        rp(options)
+            .then(function (response) {
+                //Start new session
+                startSession(req.session, user, response.token);
+                res.render('welcome');
+            })
+            .catch(function (err) {
+                console.log(err);
+                res.render('login', {message: err.error.message});
+            });
     });
 
 routes.route('/signup')
@@ -124,16 +152,15 @@ routes.route('/signup')
             method: 'POST',
             body: req.body,
             headers: {
-                'User-Agent': 'Request-Promise'
+                'User-Agent': 'Request-Promise',
+                'Authorization': req.session.token
             },
             json: true // Automatically parses the JSON string in the response
         };
 
         rp(options)
             .then(function (user) {
-                req.session.authenticated = true;
-                req.session.user = user;
-                res.locals.session = req.session;
+                startSession(req.session, user, req.session.token);
                 res.render('welcome');
             })
             .catch(function (err) {
@@ -142,6 +169,7 @@ routes.route('/signup')
                 res.render('signup', {message: err.error.message, user:user});
             });
     });
+
 routes.route('/signout')
     .get((req, res) =>
     {
@@ -151,8 +179,8 @@ routes.route('/signout')
             HttpStatus.getStatusText(HttpStatus.UNAUTHORIZED)});
             return;
         }
-        req.session.authenticated = false;
-        req.session.user = null;
+
+        deleteSession(req.session);
         res.locals.session = req.session;
         res.redirect('/');
     });
@@ -180,7 +208,8 @@ routes.route('/user/:id')
             method: 'PATCH',
             body: req.body,
             headers: {
-                'User-Agent': 'Request-Promise'
+                'User-Agent': 'Request-Promise',
+                'Authorization':  req.session.token
             },
             json: true // Automatically parses the JSON string in the response
         };
@@ -208,14 +237,14 @@ routes.route('/user/:id')
             method: 'DELETE',
             body: req.body,
             headers: {
-                'User-Agent': 'Request-Promise'
+                'User-Agent': 'Request-Promise',
+                'Authorization': req.session.token
             },
             json: true // Automatically parses the JSON string in the response
         };
         rp(options)
             .then(function () {
-                req.session.authenticated = false;
-                req.session.user = null;
+                deleteSession(req.session);
                 res.locals.session = req.session;
                 res.redirect('/');
             })
