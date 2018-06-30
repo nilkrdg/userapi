@@ -1,0 +1,9 @@
+doctype
+html(lang='en')
+    head
+        title Error
+    body
+    - if (typeof(message) !== 'undefined')
+      h1 #{message}
+    - else
+      h1 400 Bad request

@@ -1,0 +1,40 @@
+doctype
+html(lang='en')
+    head
+        title Sign Up
+body
+form(method='post', action='/signup')
+    p
+    label(for='username') Username
+    - if (typeof(user.username) !== 'undefined')
+        input(type='text', name='username' value=''+user.username)
+    - else
+        input(type='text', name='username')
+    p
+    label(for='firstName') FirstName
+    - if (typeof(user.firstName) !== 'undefined')
+      input(type='text', name='firstName' value=''+user.firstName)
+    - else
+        input(type='text', name='firstName')
+    p
+    label(for='lastName') LastName
+    - if (typeof(user.lastName) !== 'undefined')
+      input(type='text', name='lastName' value=''+user.lastName)
+    - else
+        input(type='text', name='lastName')
+    p
+    label(for='email') Email
+    - if (typeof(user.email) !== 'undefined')
+      input(type='text', name='email' value=''+user.email)
+    - else
+        input(type='text', name='email')
+    p
+    label(for='password') Password
+    input(type='password', name='password')
+    p
+    label(for='confirmPassword') Confirm Password
+    input(type='password', name='confirmPassword')
+    p
+    input(type='submit' value='create new profile')
+    p
+    h4(style='color: red;') #{message}

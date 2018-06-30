@@ -1,10 +1,16 @@
 const mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     bcrypt = require('bcrypt'),
-    jwt = require('jsonwebtoken'),
-    SALT_WORK_FACTOR = 10;
+    SALT_WORK_FACTOR = 10; //Single salt value is used for simplicity,
+// this might be enhanced with using different salt for each user
 
 let UserModel = new Schema({
+    username:{
+        type: String,
+        unique: true,
+        required: true,
+        trim: true
+    },
     firstName: {
         type: String,
         required: true,
@@ -16,12 +22,6 @@ let UserModel = new Schema({
         trim: true
     },
     email: {
-        type: String,
-        unique: true,
-        required: true,
-        trim: true
-    },
-    username:{
         type: String,
         unique: true,
         required: true,
@@ -65,6 +65,18 @@ UserModel.methods.comparePassword = function(password, callback) {
         if (err) return callback(err);
         callback(null, isMatch);
     });
+};
+
+UserModel.methods.findPropertyInErrorMessage = function(errorMessage){
+    let keys = Object.keys(UserModel.obj);
+    for(let i=0;i<keys.length;i++)
+    {
+        if(errorMessage.includes(keys[i]))
+        {
+            return keys[i];
+        }
+    }
+    return '';
 };
 
 module.exports = mongoose.model('User', UserModel);

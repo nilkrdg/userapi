@@ -1,0 +1,17 @@
+doctype
+html(lang='en')
+    block head
+    title All Users
+    body
+        h1 All Users #{users.length}
+        ul
+        each user in users
+            p ID #{user._id}
+            p Username #{user.username}
+            p First Name #{user.firstName}
+            p Last Name #{user.lastName}
+            p Email  #{user.email}
+            p edit delete
+            p -------------------------
+        else
+            li There are no values

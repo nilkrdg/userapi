@@ -1,0 +1,45 @@
+doctype
+html(lang='en')
+    block head
+    title User Details
+    body
+        div
+            p ID  #{user._id}
+            p Username  #{user.username}
+            p First Name  #{user.firstName}
+            p Last Name  #{user.lastName}
+            p Email  #{user.email}
+
+            form(method='post', action='/user/' + user._id)
+                input(type='hidden', name='id' value=''+user._id)
+                p
+                label(for='username') Username
+                input(type='text', name='username')
+                p
+                label(for='firstName') FirstName
+                input(type='text', name='firstName')
+                p
+                label(for='lastName') LastName
+                input(type='text', name='lastName')
+                p
+                label(for='email') Email
+                input(type='text', name='email')
+                p
+                label(for='oldPassword') Old Password
+                input(type='password', name='oldPassword')
+                p
+                label(for='newPassword') New Password
+                input(type='password', name='newPassword')
+                p
+                label(for='confirmPassword') Confirm New Password
+                input(type='password', name='confirmPassword')
+                p
+                input(type='submit' value='update my profile')
+
+                h4(style='color: red;' id='message')
+                p
+                p
+
+            form(method='post', action='/user/' + user._id)
+                input(type='hidden', name='_method', value='DELETE')
+                input(type='submit' value='delete my profile')

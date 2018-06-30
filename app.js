@@ -3,9 +3,10 @@ const express = require('express');
     bodyParser = require('body-parser'),
     session = require('express-session'),
     flash = require('connect-flash'),
-    routes = require('./lib/routes'),
-    apiRoutes = require('./lib/apiRoutes'),
-    methodOverride = require('method-override');
+    routes = require('./routes/routes'),
+    apiRoutes = require('./routes/apiRoutes'),
+    methodOverride = require('method-override'),
+    HttpStatus = require('http-status-codes');
 
 const db = mongoose.connect('mongodb://localhost/userAPI');
 
@@ -20,8 +21,10 @@ app.use(flash());
 
 app.use(session({ secret: 'example' }));
 
+app.use(express.static(__dirname + '/public' ));
+
 //Set view engine pug and its source folder
-app.set('views', './views');
+app.set('views', './public/views');
 app.set('view engine', 'pug');
 
 
@@ -39,6 +42,10 @@ app.use('/api', apiRoutes);
 
 //Connect all other routes
 app.use('/', routes);
+
+app.use(function(req, res){
+    res.render('error', {message: HttpStatus.NOT_FOUND+' '+HttpStatus.getStatusText(HttpStatus.NOT_FOUND)});
+});
 
 app.listen(port, () => console.log("gulp is running : listening on port "+port));
 
