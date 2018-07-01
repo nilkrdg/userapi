@@ -1,20 +1,9 @@
-extends ../../node_modules/pug-bootstrap/_bootstrap.pug
-append styles
-    link(href='../css/style.css', rel='stylesheet')
+extends layout.pug
+
 block body
-    nav.navbar.navbar-inverse
-        .container-fluid
-
-            ul.nav.navbar-nav
-                li.active
-                    a(href="/") Home
-                li
-                    a(href="/user/"+ session.user._id) Your Profile
-                li
-                    a(href="/allUsers") All Users
-            button(class="btn btn-primary navbar-btn pull-right" onclick="window.location.href='/signout'") Sign out
-            p.navbar-text.pull-right #{session.user.username}
-
+    block navbar
+    block content
     .container
         h1 Hi #{session.user.firstName} #{session.user.lastName}
         p.big-font This is an authenticated Node.JS Express Server which serves a simple user website which allows CRUD operations on a REST API.
+

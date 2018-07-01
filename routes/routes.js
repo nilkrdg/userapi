@@ -202,7 +202,7 @@ routes.route('/user/:id')
             return;
         }
         res.locals.session = req.session;
-        res.render('userDetails', {user: req.session.user});
+        res.render('userDetails2', {user: req.session.user});
     })
     .post((req, res) => {
         if(!req.session.authenticated)

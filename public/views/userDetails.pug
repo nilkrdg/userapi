@@ -1,45 +1,67 @@
-doctype
-html(lang='en')
-    block head
-    title User Details
-    body
-        div
-            p ID  #{user._id}
-            p Username  #{user.username}
-            p First Name  #{user.firstName}
-            p Last Name  #{user.lastName}
-            p Email  #{user.email}
+extends layout.pug
 
-            form(method='post', action='/user/' + user._id)
-                input(type='hidden', name='id' value=''+user._id)
-                p
-                label(for='username') Username
-                input(type='text', name='username')
-                p
-                label(for='firstName') FirstName
-                input(type='text', name='firstName')
-                p
-                label(for='lastName') LastName
-                input(type='text', name='lastName')
-                p
-                label(for='email') Email
-                input(type='text', name='email')
-                p
-                label(for='oldPassword') Old Password
-                input(type='password', name='oldPassword')
-                p
-                label(for='newPassword') New Password
-                input(type='password', name='newPassword')
-                p
-                label(for='confirmPassword') Confirm New Password
-                input(type='password', name='confirmPassword')
-                p
-                input(type='submit' value='update my profile')
+block body
+    block navbar
 
-                h4(style='color: red;' id='message') #{message}
-                p
-                p
+    .container-fluid
+        .row
+            .col-lg-6
+                h2 Profile Details
+                    table.table.table-borderless.big-font
+                        tbody
+                            tr
+                                td ID
+                                td #{user._id}
+                            tr
+                                td Username
+                                td #{user.username}
+                            tr
+                                td First Name
+                                td #{user.firstName}
+                            tr
+                                td Last Name
+                                td #{user.lastName}
+                            tr
+                                td Email
+                                td #{user.email}
+            .col-lg-6
+                .container.formContainer.editFormContainer
+                    form( class='form-edit' method='post' action='/user/' + user._id)
+                        input(type='hidden', name='id' value='' + user._id)
+                        h2.form-signin-heading Edit Profile Details
+                        br
+                        label.sr-only(for='username') Username
+                        input.form-control(name='username' type='text', placeholder='Username', autofocus='')
+                        br
+                        label.sr-only(for='firstName') First Name
+                        input.form-control(name='firstName' type='text', placeholder='First Name', autofocus='')
+                        br
+                        label.sr-only(for='lastName') Last Name
+                        input.form-control(name='lastName' type='text', placeholder='Last Name', autofocus='')
+                        br
+                        label.sr-only(for='email') Email
+                        input.form-control(name='email' type='text', placeholder='Email', autofocus='')
+                        br
+                        label.sr-only(for='oldPassword') Old Password
+                        input.form-control(name='oldPassword' type='password', placeholder='Old Password')
+                        br
+                        label.sr-only(for='newPassword') New Password
+                        input.form-control(name='newPassword' type='password', placeholder='New Password')
+                        br
+                        label.sr-only(for='confirmPassword') Confirm New Password
+                        input.form-control(name='confirmPassword' type='password', placeholder='Confirm New Password')
+                        br
+                        button.btn.btn-lg.btn-primary.btn-block(type='submit') Save
+                        br
+                        - if (typeof(message) !== 'undefined')
+                            div.alert.alert-danger #{message}
 
-            form(method='post', action='/user/' + user._id)
-                input(type='hidden', name='_method', value='DELETE')
-                input(type='submit' value='delete my profile')
+                    form( class='form-delete' method='post' action='/user/' + user._id)
+                        input(type='hidden', name='_method', value='DELETE')
+                        button.btn.btn-lg.btn-danger.btn-block.btn-delete(type='submit') Permanently delete my account
+
+
+
+
+
+
