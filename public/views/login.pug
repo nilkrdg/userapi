@@ -11,8 +11,10 @@ block body
                 input.form-control(name='username' type='username' value=username, placeholder='Username', required='', autofocus='')
             - else
                 input.form-control(name='username' type='username', placeholder='Username', required='', autofocus='')
+
             label.sr-only(for='password') Password
             input#inputPassword.form-control(name='password' type='password', placeholder='Password', required='')
+            br
             button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign in
         br
         a(href='/signup') Sign Up
