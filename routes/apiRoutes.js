@@ -18,7 +18,7 @@ function verifyToken(req, next)
     else {
         jwt.verify(token, config.secret, (err, decoded) => {
             if (err) {
-                if(err.name === 'TokenExpired')
+                if(err.name === 'TokenExpiredError')
                 {
                     response = {
                         statusCode:  HttpStatus.UNAUTHORIZED,

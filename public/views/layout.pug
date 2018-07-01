@@ -14,7 +14,6 @@ append styles
                 a(href="/user/" + session.user._id class="navbar-text pull-right") #{session.user.username}
 
         footer.footer
-            .container
+            .container.footer-content
+                img#profilePic(src="../images/profile_pic_frame.png" alt="Profile Picture")
                 span.text-muted © Copyright 2018. Powered by Nil Karadağ.
-
-
