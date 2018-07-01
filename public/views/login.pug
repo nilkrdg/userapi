@@ -1,22 +1,23 @@
-doctype
-html(lang='en')
-    head
-        title Login
-    body
-
-        form(method='post')
-            label(for='username') Username
+extends ../../node_modules/pug-bootstrap/_bootstrap.pug
+append styles
+    // Custom styles for this template
+    link(href='../css/login.css', rel='stylesheet')
+block body
+    #signInContainer.container
+        form( class='form-signin' method='post')
+            h2.form-signin-heading Please sign in
+            br
+            label.sr-only(for='username') Username
             - if (typeof(username) !== 'undefined')
-                input(type='text', name='username' value=username)
+                input.form-control(name='username' type='username' value=username, placeholder='Username', required='', autofocus='')
             - else
-                input(type='text', name='username')
-            p
-            label(for='password') Password
-            input(type='password', name='password')
-            p
-            input(type='submit' value='Log in')
-        p
-        a(href="/signup") Sign Up
-
-        h4(style="color: red;") #{message}
-
+                input.form-control(name='username' type='username', placeholder='Username', required='', autofocus='')
+            label.sr-only(for='password') Password
+            input#inputPassword.form-control(name='password' type='password', placeholder='Password', required='')
+            button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign in
+        br
+        a(href='/signup') Sign Up
+        br
+        br
+        - if (typeof(message) !== 'undefined')
+            div.alert.alert-danger #{message}
