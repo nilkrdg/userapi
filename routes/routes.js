@@ -54,8 +54,7 @@ routes.route('/allUsers')
     .get((req, res) => {
         if(!req.session.authenticated)
         {
-            res.render('error', {message: HttpStatus.UNAUTHORIZED+' '+
-            HttpStatus.getStatusText(HttpStatus.UNAUTHORIZED)});
+            res.render('error', {errorStatusCode: HttpStatus.UNAUTHORIZED});
             return;
         }
 
@@ -73,7 +72,7 @@ routes.route('/allUsers')
                     res.redirect('/');
                 }
                 else
-                res.render('error', {message :  HttpStatus.getStatusText(HttpStatus.INTERNAL_SERVER_ERROR)});
+                res.render('error', {errorStatusCode: HttpStatus.INTERNAL_SERVER_ERROR});
             });
     });
 
@@ -81,7 +80,7 @@ routes.route('/')
     .get((req, res) =>
     {
         if(!req.session.authenticated)
-            res.render('login', { username: '' });
+            res.render('login');
         else
         {
             res.locals.session = req.session;
@@ -184,8 +183,7 @@ routes.route('/signout')
     {
         if(!req.session.authenticated)
         {
-            res.render('error', {message: HttpStatus.UNAUTHORIZED+' '+
-            HttpStatus.getStatusText(HttpStatus.UNAUTHORIZED)});
+            res.render('error', {errorStatusCode: HttpStatus.UNAUTHORIZED});
             return;
         }
 
@@ -197,8 +195,7 @@ routes.route('/user/:id')
     .get((req, res) => {
         if(!req.session.authenticated)
         {
-            res.render('error', {message: HttpStatus.UNAUTHORIZED+' '+
-            HttpStatus.getStatusText(HttpStatus.UNAUTHORIZED)});
+            res.render('error', {errorStatusCode: HttpStatus.UNAUTHORIZED});
             return;
         }
         res.locals.session = req.session;
@@ -207,8 +204,7 @@ routes.route('/user/:id')
     .post((req, res) => {
         if(!req.session.authenticated)
         {
-            res.render('error', {message: HttpStatus.UNAUTHORIZED+' '+
-            HttpStatus.getStatusText(HttpStatus.UNAUTHORIZED)});
+            res.render('error', {errorStatusCode: HttpStatus.UNAUTHORIZED});
             return;
         }
 
@@ -232,8 +228,7 @@ routes.route('/user/:id')
     .delete((req, res) => {
         if(!req.session.authenticated)
         {
-            res.render('error', {message: HttpStatus.UNAUTHORIZED+' '+
-            HttpStatus.getStatusText(HttpStatus.UNAUTHORIZED)});
+            res.render('error', {errorStatusCode: HttpStatus.UNAUTHORIZED});
             return;
         }
 
@@ -245,12 +240,7 @@ routes.route('/user/:id')
             })
             .catch(function (err) {
                 console.log(err);
-                let message = 'Operation failed!';
-                if(err.error && err.error.message)
-                {
-                    message = err.error.message;
-                }
-                res.render('error', {message: message});
+                res.render('error', {errorStatusCode: err.statusCode});
             });
     });
 

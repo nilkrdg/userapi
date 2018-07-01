@@ -1,6 +1,33 @@
 extends ../../node_modules/pug-bootstrap/_bootstrap.pug
+append styles
+    link(href='../css/style.css', rel='stylesheet')
+    style.
+        body {
+            background: #f6f6f6;
+        }
     body
-    - if (typeof(message) !== 'undefined')
-      h1 #{message}
-    - else
-      h1 400 Bad request
+        .container.errorTextContainer
+            - if (errorStatusCode == 404)
+                h1.errorTextTitle Sorry :(
+                h1 404 Not Found
+                p We can't find the page you are looking for.
+            - else if (errorStatusCode === 401)
+                h1.errorTextTitle Oooops
+                h1 401 Unauthorized
+                p You are not authorized for selected action.
+                a(href="/") Go to login page
+            - else if (errorStatusCode === 400)
+                h1.errorTextTitle Oooops
+                h1 400 Bad Request
+                p Your request resulted in an error.
+            - else
+                h1.errorTextTitle Sorry :(
+                h1 500 Server
+                p  Something went wrong.
+                br
+                p Try to refresh this page or feel free to contact us if the problem persists.
+
+    footer.footer
+        .container.footer-content
+            img#profilePic(src="../images/profile_pic_frame.png" alt="Profile Picture")
+            span.text-muted © Copyright 2018. Powered by Nil Karadağ.

@@ -37,3 +37,14 @@
 #profilePic{
     margin-right:10px;
 }
+
+.errorTextTitle{
+    margin-top:200px;
+    font-size: 100px;
+}
+
+.errorTextContainer{
+    text-align:center;
+    width:100%;
+    color:#606765;
+}
