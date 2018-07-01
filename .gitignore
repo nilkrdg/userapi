@@ -3,4 +3,4 @@ node_modules
 *~
 *.html
 public/uploads
-public(incoming
+public/images
