@@ -14,7 +14,7 @@ class Base64Encoder{
         //create buffer object from base64 encoded string
         const bitmap = new Buffer(base64str, 'base64');
         //write buffer to file
-        fs.writeFileSync(file, bitmap);
+        fs.writeFileSync('public/incoming/'+file, bitmap);
         console.log('File created from base64 encoded string');
     }
 }

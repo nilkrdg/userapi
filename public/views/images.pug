@@ -1,0 +1,17 @@
+extends layout.pug
+
+block body
+    block navbar
+    block content
+    .container.center
+    h2 Images
+    table.table.table-borderless.big-font
+        tbody
+        each image in images
+            tr
+                td
+                    img(src='../incoming/' + image, alt="")
+                td  #{image}
+
+
+

@@ -4,8 +4,9 @@ const HttpStatus = require('http-status-codes');
 const config = require('../config');
 const multer  = require('multer');
 const base64Encoder = require('../base64Encoder');
+const fs = require('fs');
 
-//multer object creation
+//create multer object to save images
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'public/uploads/')
@@ -14,12 +15,12 @@ const storage = multer.diskStorage({
         cb(null, file.originalname)
     }
 });
-
 const upload = multer({ storage: storage });
 
-
+//Include router
 let routes = require('express').Router();
 
+//Starts session and sets necessary parameters
 function startSession(req, res, user, token)
 {
     req.session.authenticated = true;
@@ -28,6 +29,7 @@ function startSession(req, res, user, token)
     res.locals.session = req.session;
 }
 
+//Deletes session and removes saved parameters
 function deleteSession(req, res)
 {
     req.session.authenticated = false;
@@ -36,6 +38,7 @@ function deleteSession(req, res)
     res.locals.session = req.session;
 }
 
+//Generates http request options object with given parameters
 function getHttpRequestOptions(url, method, parameter, body, token)
 {
     let options =  {
@@ -55,13 +58,11 @@ function getHttpRequestOptions(url, method, parameter, body, token)
     return options;
 }
 
-// middleware to use for all requests
+//middleware to use for all requests and logs requests
 routes.use((req, res, next) => {
     //logging
     console.log('method '+ req.method);
     console.log('originalUrl '+req.originalUrl);
-    console.log('params '+req.params);
-    console.log('query '+req.query);
     next(); // go to the next apiRoutes
 });
 
@@ -211,6 +212,7 @@ routes.route('/images')
 
         if(req.file)
         {
+            //Save image name in local variable to display later
             const imgName = req.file.filename;
 
             //Encode image to base64 to be able to send in json message
@@ -219,10 +221,11 @@ routes.route('/images')
             //Create request message
             let requestMessage = {
                 img:encodedImg,
-                userId: req.session.user._id
+                userId: req.session.user._id,
+                name: imgName
             };
 
-            //Send message to REST api to save in database
+            //Send message to REST api to save the image in database
             let options = getHttpRequestOptions('/api/images', 'POST', null, requestMessage, req.session.token);
 
             rp(options)
@@ -251,6 +254,40 @@ routes.route('/images')
                     res.render('userDetails', {user: req.session.user, message: message});
                 });
         }
+    })
+    .get((req, res) => {
+        if(!req.session.authenticated)
+        {
+            res.render('error', {errorStatusCode: HttpStatus.UNAUTHORIZED});
+            return;
+        }
+        let options = getHttpRequestOptions('/api/images', 'GET', null, null, req.session.token);
+        rp(options)
+            .then(function (images) {
+                res.locals.session = req.session;
+
+                for(let i=0;i<images.length;i++) {
+                    if(images[i])
+                    base64Encoder.decode(images[i].img, images[i].name);
+                }
+
+                //Read incoming directory
+                fs.readdir('public/incoming', function(err, files){
+                    if(files)
+                    res.render('images', {images: files});
+                });
+
+            })
+            .catch(function (err) {
+                console.log(err);
+                if(err.statusCode === HttpStatus.UNAUTHORIZED)
+                {
+                    deleteSession(req, res);
+                    res.redirect('/');
+                }
+                else
+                    res.render('error', {errorStatusCode: HttpStatus.INTERNAL_SERVER_ERROR});
+            });
     });
 
 routes.route('/user/:id')

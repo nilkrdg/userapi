@@ -53,3 +53,12 @@
     max-width: 150px;
     max-height: 150px;
 }
+
+.imageGallery{
+    position: absolute;
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}

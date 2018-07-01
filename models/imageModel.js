@@ -8,7 +8,10 @@ let ImageModel = new Schema(  {
     required: true,
     },
     img:
-    { data: Buffer, type: String }
+    { data: Buffer, type: String },
+    name:{
+        type: String
+    }
 });
 
 module.exports = mongoose.model('Image', ImageModel);

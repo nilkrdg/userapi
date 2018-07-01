@@ -342,30 +342,35 @@ apiRoutes.route('/users')
 
 apiRoutes.route('/images')
     .post((req, res) => {
+        verifyToken(req, (err, response) => {
+            if (err) {
+                return res.status(err.statusCode).json({message: err.message});
+            }
 
-        // Create an Image instance
-        const image = new Image({
-            userId: req.body.userId,
-            img: req.body.img
-        });
-
-        //Remove previous image
-        Image.remove( { userId: image.userId }, (err, img) =>{
-
-            //Save new image as encoded base64
-            image.save((err, img) => {
-                if(err || !img)
-                {
-                    console.log(err);
-                    let response = {message:  'Image save failed'};
-                    return res.status(HttpStatus.BAD_REQUEST).json(response);
-                }
-                else{
-                    let response = {message:  'Image save success'};
-                    return res.status(HttpStatus.OK).json(response);
-                }
+            // Create an Image instance
+            const image = new Image({
+                userId: req.body.userId,
+                img: req.body.img,
+                name: req.body.name
             });
-        } );
+
+            //Remove previous image
+            Image.remove({userId: image.userId}, (err, img) => {
+
+                //Save new image as encoded base64
+                image.save((err, img) => {
+                    if (err || !img) {
+                        console.log(err);
+                        let response = {message: 'Image save failed'};
+                        return res.status(HttpStatus.BAD_REQUEST).json(response);
+                    }
+                    else {
+                        let response = {message: 'Image save success'};
+                        return res.status(HttpStatus.OK).json(response);
+                    }
+                });
+            });
+        });
     })
     .get((req, res) => {
         verifyToken(req, (err, response) => {
@@ -373,17 +378,17 @@ apiRoutes.route('/images')
                 return res.status(err.statusCode).json({message: err.message});
             }
 
-            User.find((err, users) => {
+            //Fetch images from database
+            Image.find((err, images) => {
                 if (err) {
                     console.log(err);
                     let response = {
-                        message: 'User cannot retrieved',
-                        id: user.id
+                        message: err.message
                     };
                     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(response);
                 }
                 else {
-                    return res.status(HttpStatus.OK).json(users);
+                    return res.status(HttpStatus.OK).json(images);
                 }
             });
         });

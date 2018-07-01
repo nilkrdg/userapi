@@ -10,6 +10,8 @@ append styles
                         a(href="/") Home
                     li
                         a(href="/allUsers") All Users
+                    li
+                        a(href="/images") Images
                 button(class="btn btn-primary navbar-btn pull-right" onclick="window.location.href='/signout'") Sign out
                 a(href="/user/" + session.user._id class="navbar-text pull-right") #{session.user.username}
 
