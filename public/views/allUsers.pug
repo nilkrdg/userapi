@@ -1,17 +1,26 @@
-doctype
-html(lang='en')
-    block head
-    title All Users
-    body
-        h1 All Users #{users.length}
-        ul
+extends layout.pug
+
+block body
+    block navbar
+    .container
+        h2 User List / Number of users #{users.length}
         each user in users
-            p ID #{user._id}
-            p Username #{user.username}
-            p First Name #{user.firstName}
-            p Last Name #{user.lastName}
-            p Email  #{user.email}
-            p edit delete
-            p -------------------------
+            table.table.table-borderless.big-font
+                tbody
+                    tr
+                        td ID
+                        td #{user._id}
+                    tr
+                        td Username
+                        td #{user.username}
+                    tr
+                        td First Name
+                        td #{user.firstName}
+                    tr
+                        td Last Name
+                        td #{user.lastName}
+                    tr
+                        td Email
+                        td #{user.email}
         else
-            li There are no values
+            li User list is empty.

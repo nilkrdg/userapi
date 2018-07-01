@@ -6,16 +6,13 @@ append styles
             .container-fluid
 
                 ul.nav.navbar-nav
-                    li.active
-                        a(href="/") Home
                     li
-                        a(href="/user/"+ session.user._id) Your Profile
+                        a(href="/") Home
                     li
                         a(href="/allUsers") All Users
                 button(class="btn btn-primary navbar-btn pull-right" onclick="window.location.href='/signout'") Sign out
-                p.navbar-text.pull-right #{session.user.username}
+                a(href="/user/" + session.user._id class="navbar-text pull-right") #{session.user.username}
 
-                
         footer.footer
             .container
                 span.text-muted © Copyright 2018. Powered by Nil Karadağ.

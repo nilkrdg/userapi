@@ -62,8 +62,8 @@ routes.route('/allUsers')
         let options = getHttpRequestOptions('/api/users', 'GET', null, null, req.session.token);
         rp(options)
             .then(function (response) {
+                res.locals.session = req.session;
                 res.render('allUsers', {users: response});
-
             })
             .catch(function (err) {
                 console.log(err);
@@ -202,7 +202,7 @@ routes.route('/user/:id')
             return;
         }
         res.locals.session = req.session;
-        res.render('userDetails2', {user: req.session.user});
+        res.render('userDetails', {user: req.session.user});
     })
     .post((req, res) => {
         if(!req.session.authenticated)
