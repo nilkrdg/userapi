@@ -269,7 +269,13 @@ function findByIdAndUpdate(req, res)
                 console.log("updateUser" +err);
                 const defaultMessage = 'Update operation failed!';
                 let response = getErrorMessage(defaultMessage, err.message, userRequestData);
-                return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send(response);
+                if(response.message === defaultMessage)
+                {
+                    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send(response);
+                }
+                else{
+                    return res.status(HttpStatus.BAD_REQUEST).send(response);
+                }
             }
             else if(!user)
             {
@@ -295,10 +301,10 @@ apiRoutes.route('/users')
                 console.log(err);
                 const defaultMessage = 'Operation failed!';
                 let response = getErrorMessage(defaultMessage, err.message, userRequestData);
-                return  res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(response);
+                return res.status(HttpStatus.BAD_REQUEST).json(response);
             }
             else{
-                return  res.status(HttpStatus.OK).json(user);
+                return res.status(HttpStatus.OK).json(user);
             }
         });
     })

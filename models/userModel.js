@@ -42,12 +42,6 @@ UserModel.pre('save', function(next) {
     user.hashPassword(next);
 });
 
-UserModel.methods.login = function(username, password, next)
-{
-
-
-};
-
 UserModel.methods.hashPassword = function(next)
 {
     let user = this;

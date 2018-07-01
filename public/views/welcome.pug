@@ -6,7 +6,7 @@ html(lang='en')
         h1 Hi #{session.user.firstName} #{session.user.lastName}
         p Navigate to
             ul
-                li: a(href="/userList") All users
+                li: a(href="/allUsers") All users
                 li: a(href="/user/" + session.user._id) Your profile
                 li: a(href="/signout") Sign out
                 each message in flash

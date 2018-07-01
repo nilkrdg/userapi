@@ -1,23 +1,44 @@
 const User = require('../models/userModel');
 const rp = require('request-promise');
 const HttpStatus = require('http-status-codes');
-
+const config = require('../config');
 
 let routes = require('express').Router();
 
-function startSession(session, user, token)
+function startSession(req, res, user, token)
 {
     req.session.authenticated = true;
-    req.session.user = response.user;
-    req.session.token = response.token;
+    req.session.user = user;
+    req.session.token = token;
     res.locals.session = req.session;
-};
+}
 
-function deleteSession(session)
+function deleteSession(req, res)
 {
+    req.session.authenticated = false;
+    req.session.user = null;
+    req.session.token = null;
+    res.locals.session = req.session;
+}
 
-};
-
+function getHttpRequestOptions(url, method, parameter, body, token)
+{
+    let options =  {
+        uri: 'http://'+config.host+':'+config.port+url,
+        method: method,
+        headers: {
+            'User-Agent': 'Request-Promise'
+        },
+        json: true // Automatically parses the JSON string in the response
+    };
+    if(body)
+        options.body = body;
+    if(parameter)
+        options.uri += '/'+parameter;
+    if(token)
+        options.headers['Authorization'] = token;
+    return options;
+}
 
 // middleware to use for all requests
 routes.use((req, res, next) => {
@@ -29,29 +50,26 @@ routes.use((req, res, next) => {
     next(); // go to the next apiRoutes
 });
 
-routes.route('/userList')
+routes.route('/allUsers')
     .get((req, res) => {
+        if(!req.session.authenticated)
+        {
+            res.render('error', {message: HttpStatus.UNAUTHORIZED+' '+
+            HttpStatus.getStatusText(HttpStatus.UNAUTHORIZED)});
+            return;
+        }
 
-        let options = {
-            uri: 'http://localhost:8080/api/users',
-            headers: {
-                'User-Agent': 'Request-Promise',
-                'Authorization': req.session.token
-            },
-            json: true // Automatically parses the JSON string in the response
-        };
-
+        let options = getHttpRequestOptions('/api/users', 'GET', null, null, req.session.token);
         rp(options)
             .then(function (response) {
-                res.render('userList', {users: response});
+                res.render('allUsers', {users: response});
 
             })
             .catch(function (err) {
                 console.log(err);
                 if(err.statusCode === HttpStatus.UNAUTHORIZED)
                 {
-                    deleteSession(req.session);
-                    res.locals.session = req.session;
+                    deleteSession(req, res);
                     res.redirect('/');
                 }
                 else
@@ -82,25 +100,21 @@ routes.route('/')
             return res.render('login', {message: 'Password field is empty!', username: req.body.username});
         }
 
-        let options = {
-            uri: 'http://localhost:8080/api/login',
-            method: 'POST',
-            body: req.body,
-            headers: {
-                'User-Agent': 'Request-Promise'
-            },
-            json: true // Automatically parses the JSON string in the response
-        };
-
+        let options = getHttpRequestOptions('/api/login', 'POST', null, req.body, null);
         rp(options)
             .then(function (response) {
                 //Start new session
-                startSession(req.session, user, response.token);
-                res.render('welcome');
+                startSession(req, res, response.user, response.token);
+                 res.render('welcome');
             })
             .catch(function (err) {
                 console.log(err);
-                res.render('login', {message: err.error.message});
+                let message = 'Operation failed!';
+                if(err.error && err.error.message)
+                {
+                    message = err.error.message;
+                }
+                 res.render('login', {message: message});
             });
     });
 
@@ -147,26 +161,21 @@ routes.route('/signup')
             return;
         }
 
-        let options = {
-            uri: 'http://localhost:8080/api/users',
-            method: 'POST',
-            body: req.body,
-            headers: {
-                'User-Agent': 'Request-Promise',
-                'Authorization': req.session.token
-            },
-            json: true // Automatically parses the JSON string in the response
-        };
-
+        let options = getHttpRequestOptions('/api/users', 'POST', null, req.body, req.session.token);
         rp(options)
-            .then(function (user) {
-                startSession(req.session, user, req.session.token);
-                res.render('welcome');
+            .then(function () {
+                //Redirect to main page for login
+                res.redirect('/');
             })
             .catch(function (err) {
                 console.log(err);
                 let user = Object.assign(err.error.user);//copy valid user fields
-                res.render('signup', {message: err.error.message, user:user});
+                let message = 'Operation failed!';
+                if(err.error && err.error.message)
+                {
+                    message = err.error.message;
+                }
+                res.render('signup', {message: message, user:user});
             });
     });
 
@@ -180,8 +189,7 @@ routes.route('/signout')
             return;
         }
 
-        deleteSession(req.session);
-        res.locals.session = req.session;
+        deleteSession(req, res);
         res.redirect('/');
     });
 
@@ -203,17 +211,8 @@ routes.route('/user/:id')
             HttpStatus.getStatusText(HttpStatus.UNAUTHORIZED)});
             return;
         }
-        let options = {
-            uri: 'http://localhost:8080/api/users/'+req.body.id,
-            method: 'PATCH',
-            body: req.body,
-            headers: {
-                'User-Agent': 'Request-Promise',
-                'Authorization':  req.session.token
-            },
-            json: true // Automatically parses the JSON string in the response
-        };
 
+        let options = getHttpRequestOptions('/api/users', 'PATCH', req.body.id, req.body, req.session.token);
         rp(options)
             .then(function (user) {
                 req.session.user = user;
@@ -222,7 +221,12 @@ routes.route('/user/:id')
             })
             .catch(function (err) {
                 console.log(err);
-                res.render('userDetails', {message: err.error.message});
+                let message = 'Operation failed!';
+                if(err.error && err.error.message)
+                {
+                    message = err.error.message;
+                }
+                res.render('userDetails', {user: req.session.user, message: message});
             });
     })
     .delete((req, res) => {
@@ -232,25 +236,21 @@ routes.route('/user/:id')
             HttpStatus.getStatusText(HttpStatus.UNAUTHORIZED)});
             return;
         }
-        let options = {
-            uri: 'http://localhost:8080/api/users/'+req.params.id,
-            method: 'DELETE',
-            body: req.body,
-            headers: {
-                'User-Agent': 'Request-Promise',
-                'Authorization': req.session.token
-            },
-            json: true // Automatically parses the JSON string in the response
-        };
+
+        let options = getHttpRequestOptions('/api/users', 'DELETE', req.session.user._id, null, req.session.token);
         rp(options)
             .then(function () {
-                deleteSession(req.session);
-                res.locals.session = req.session;
+                deleteSession(req, res);
                 res.redirect('/');
             })
             .catch(function (err) {
                 console.log(err);
-                res.render('error', {message: err.error.message});
+                let message = 'Operation failed!';
+                if(err.error && err.error.message)
+                {
+                    message = err.error.message;
+                }
+                res.render('error', {message: message});
             });
     });
 
