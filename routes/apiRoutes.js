@@ -1,4 +1,5 @@
 const User = require('../models/userModel');
+const Image = require('../models/imageModel');
 const HttpStatus = require('http-status-codes');
 const bcrypt = require('bcrypt');
 const config = require('../config');
@@ -316,6 +317,55 @@ apiRoutes.route('/users')
                 return res.status(HttpStatus.OK).json(user);
             }
         });
+    })
+    .get((req, res) => {
+        verifyToken(req, (err, response) => {
+            if (err) {
+                return res.status(err.statusCode).json({message: err.message});
+            }
+
+            User.find((err, users) => {
+                if (err) {
+                    console.log(err);
+                    let response = {
+                        message: 'User cannot retrieved',
+                        id: user.id
+                    };
+                    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(response);
+                }
+                else {
+                    return res.status(HttpStatus.OK).json(users);
+                }
+            });
+        });
+    });
+
+apiRoutes.route('/images')
+    .post((req, res) => {
+
+        // Create an Image instance
+        const image = new Image({
+            userId: req.body.userId,
+            img: req.body.img
+        });
+
+        //Remove previous image
+        Image.remove( { userId: image.userId }, (err, img) =>{
+
+            //Save new image as encoded base64
+            image.save((err, img) => {
+                if(err || !img)
+                {
+                    console.log(err);
+                    let response = {message:  'Image save failed'};
+                    return res.status(HttpStatus.BAD_REQUEST).json(response);
+                }
+                else{
+                    let response = {message:  'Image save success'};
+                    return res.status(HttpStatus.OK).json(response);
+                }
+            });
+        } );
     })
     .get((req, res) => {
         verifyToken(req, (err, response) => {

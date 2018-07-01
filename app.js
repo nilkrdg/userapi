@@ -8,7 +8,8 @@ const express = require('express');
     methodOverride = require('method-override'),
     HttpStatus = require('http-status-codes');
 
-const db = mongoose.connect('mongodb://localhost/userAPI');
+
+mongoose.connect('mongodb://localhost/userAPI');
 
 const app = express();
 const port = process.env.PORT || 8080;

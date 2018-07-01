@@ -26,6 +26,16 @@ block body
                                 td #{user.email}
             .col-lg-6
                 .container.formContainer.editFormContainer
+                    div#imageContainer
+                    - if (typeof(imgName) !== 'undefined')
+                        img.profileImg(src='../uploads/' + imgName  alt='Profile Image')
+                    - else
+                        img.profileImg(src='../images/default.png'  alt='Profile Image')
+                    form(method='post', enctype='multipart/form-data' action='/images')
+                        input(type='file', name='imageupload')
+                        input(type='submit', name='uploadimage', value='Upload Image')
+
+
                     form( class='form-edit' method='post' action='/user/' + user._id)
                         input(type='hidden', name='id' value='' + user._id)
                         h2.form-signin-heading Edit Profile Details

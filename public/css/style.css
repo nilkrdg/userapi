@@ -48,3 +48,8 @@
     width:100%;
     color:#606765;
 }
+
+.profileImg {
+    max-width: 150px;
+    max-height: 150px;
+}

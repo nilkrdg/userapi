@@ -2,6 +2,21 @@ const User = require('../models/userModel');
 const rp = require('request-promise');
 const HttpStatus = require('http-status-codes');
 const config = require('../config');
+const multer  = require('multer');
+const base64Encoder = require('../base64Encoder');
+
+//multer object creation
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'public/uploads/')
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname)
+    }
+});
+
+const upload = multer({ storage: storage });
+
 
 let routes = require('express').Router();
 
@@ -72,7 +87,7 @@ routes.route('/allUsers')
                     res.redirect('/');
                 }
                 else
-                res.render('error', {errorStatusCode: HttpStatus.INTERNAL_SERVER_ERROR});
+                    res.render('error', {errorStatusCode: HttpStatus.INTERNAL_SERVER_ERROR});
             });
     });
 
@@ -104,7 +119,7 @@ routes.route('/')
             .then(function (response) {
                 //Start new session
                 startSession(req, res, response.user, response.token);
-                 res.render('welcome');
+                res.render('welcome');
             })
             .catch(function (err) {
                 console.log(err);
@@ -113,7 +128,7 @@ routes.route('/')
                 {
                     message = err.error.message;
                 }
-                 res.render('login', {message: message});
+                res.render('login', {message: message});
             });
     });
 
@@ -191,6 +206,53 @@ routes.route('/signout')
         res.redirect('/');
     });
 
+routes.route('/images')
+    .post(upload.single('imageupload'), (req, res) => {
+
+        if(req.file)
+        {
+            const imgName = req.file.filename;
+
+            //Encode image to base64 to be able to send in json message
+            let encodedImg = base64Encoder.encode(req.file.path);
+
+            //Create request message
+            let requestMessage = {
+                img:encodedImg,
+                userId: req.session.user._id
+            };
+
+            //Send message to REST api to save in database
+            let options = getHttpRequestOptions('/api/images', 'POST', null, requestMessage, req.session.token);
+
+            rp(options)
+                .then(function (response) {
+                    console.log(response);
+                    //Save image file name in user collection to display
+                    let user = req.session.user;
+                    user.profileImg = imgName;
+                    User.findOneAndUpdate({_id: user._id}, user, {upsert:true}, function(err, user){
+                        if (err){
+                            console.log('image save operation failed.');
+                        }
+                        else {
+                            console.log('image name successfully saved');
+                        }
+                    });
+
+                    //reload page with profile image
+                    res.locals.session = req.session;
+                    res.render('userDetails', {user: req.session.user, imgName: imgName});
+                })
+                .catch(function (err) {
+                    console.log(err);
+                    let message = 'Image upload failed!';
+                    res.locals.session = req.session;
+                    res.render('userDetails', {user: req.session.user, message: message});
+                });
+        }
+    });
+
 routes.route('/user/:id')
     .get((req, res) => {
         if(!req.session.authenticated)
@@ -199,7 +261,7 @@ routes.route('/user/:id')
             return;
         }
         res.locals.session = req.session;
-        res.render('userDetails', {user: req.session.user});
+        res.render('userDetails', {user: req.session.user, imgName: req.session.user.profileImg});
     })
     .post((req, res) => {
         if(!req.session.authenticated)
@@ -207,7 +269,6 @@ routes.route('/user/:id')
             res.render('error', {errorStatusCode: HttpStatus.UNAUTHORIZED});
             return;
         }
-
         let options = getHttpRequestOptions('/api/users', 'PATCH', req.body.id, req.body, req.session.token);
         rp(options)
             .then(function (user) {

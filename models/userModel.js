@@ -34,7 +34,10 @@ let UserModel = new Schema({
         validate: [validatePassword, 'Password is not valid! Please make sure ' +
         'your password has minimum eight characters,' +
         ' at least one letter and one number.']
-    }
+    },
+    profileImg: {
+        type: String
+    },
 });
 
 function validateEmail(email) {
