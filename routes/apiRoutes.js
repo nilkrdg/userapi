@@ -237,9 +237,17 @@ function getRequiredErrorMessage(message)
     return;
 }
 
-function getErrorMessage(defaultResponse, errorMessage, userRequestData)
+function getErrorMessage(defaultResponse, error, userRequestData)
 {
     let message = defaultResponse;
+
+    if(error.name === 'ValidationError')
+    {
+        return {
+            message: error.message,
+            user: userRequestData
+        };
+    }
 
     let duplicateErrorMessage = getDuplicateErrorMessage(errorMessage);
     let requiredErrorMessage = getRequiredErrorMessage(errorMessage);
@@ -300,7 +308,8 @@ apiRoutes.route('/users')
             {
                 console.log(err);
                 const defaultMessage = 'Operation failed!';
-                let response = getErrorMessage(defaultMessage, err.message, userRequestData);
+
+                let response = getErrorMessage(defaultMessage, err, userRequestData);
                 return res.status(HttpStatus.BAD_REQUEST).json(response);
             }
             else{

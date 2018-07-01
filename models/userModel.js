@@ -3,6 +3,7 @@ const mongoose = require('mongoose'),
     bcrypt = require('bcrypt'),
     SALT_WORK_FACTOR = require('../config').salt;
 
+
 let UserModel = new Schema({
     username:{
         type: String,
@@ -24,13 +25,28 @@ let UserModel = new Schema({
         type: String,
         unique: true,
         required: true,
-        trim: true
+        trim: true,
+        validate: [validateEmail, 'Email is not valid!']
     },
     password:{
         type:String,
-        required: true
+        required: true,
+        validate: [validatePassword, 'Password is not valid. Please make sure ' +
+        'your password has minimum eight characters,' +
+        ' at least one letter,' +
+        ' and one number']
     }
 });
+
+function validateEmail(email) {
+    let re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    return re.test(email);
+};
+
+function validatePassword(password){
+    let re = /^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{8,})/;
+    return re.test(password);
+}
 
 UserModel.pre('save', function(next) {
     let user = this;
