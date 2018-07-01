@@ -157,7 +157,7 @@ routes.route('/signup')
 
         if(req.body.password !== req.body.confirmPassword)
         {
-            res.render('signup', {message: 'Password does not!', user: req.body});
+            res.render('signup', {message: 'Password does not match!', user: req.body});
             return;
         }
 

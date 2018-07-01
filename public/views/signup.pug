@@ -1,40 +1,43 @@
-doctype
-html(lang='en')
-    head
-        title Sign Up
-body
-form(method='post', action='/signup')
-    p
-    label(for='username') Username
-    - if (typeof(user.username) !== 'undefined')
-        input(type='text', name='username' value=''+user.username)
-    - else
-        input(type='text', name='username')
-    p
-    label(for='firstName') FirstName
-    - if (typeof(user.firstName) !== 'undefined')
-      input(type='text', name='firstName' value=''+user.firstName)
-    - else
-        input(type='text', name='firstName')
-    p
-    label(for='lastName') LastName
-    - if (typeof(user.lastName) !== 'undefined')
-      input(type='text', name='lastName' value=''+user.lastName)
-    - else
-        input(type='text', name='lastName')
-    p
-    label(for='email') Email
-    - if (typeof(user.email) !== 'undefined')
-      input(type='text', name='email' value=''+user.email)
-    - else
-        input(type='text', name='email')
-    p
-    label(for='password') Password
-    input(type='password', name='password')
-    p
-    label(for='confirmPassword') Confirm Password
-    input(type='password', name='confirmPassword')
-    p
-    input(type='submit' value='create new profile')
-    p
-    h4(style='color: red;') #{message}
+extends ../../node_modules/pug-bootstrap/_bootstrap.pug
+append styles
+    link(href='../css/style.css', rel='stylesheet')
+block body
+    .container.formContainer
+        form( class='form-signup' method='post')
+            h2.form-signin-heading Sign Up
+            br
+            label.sr-only(for='username') Username
+            - if (typeof(user.username) !== 'undefined')
+                input.form-control(name='username' type='text' value=user.username, placeholder='Username', required='', autofocus='')
+            - else
+                input.form-control(name='username' type='text', placeholder='Username', required='', autofocus='')
+            br
+            label.sr-only(for='firstName') First Name
+            - if (typeof(user.firstName) !== 'undefined')
+                input.form-control(name='firstName' type='text' value=user.firstName, placeholder='FirstName', required='', autofocus='')
+            - else
+                input.form-control(name='firstName' type='text', placeholder='First Name', required='', autofocus='')
+            br
+            label.sr-only(for='lastName') Last Name
+            - if (typeof(user.lastName) !== 'undefined')
+                input.form-control(name='lastName' type='text' value=user.lastName, placeholder='Last Name', required='', autofocus='')
+            - else
+                input.form-control(name='lastName' type='text', placeholder='Last Name', required='', autofocus='')
+            br
+            label.sr-only(for='email') Email
+            - if (typeof(user.email) !== 'undefined')
+                input.form-control(name='email' type='text' value=user.email, placeholder='Email', required='', autofocus='')
+            - else
+                input.form-control(name='email' type='text', placeholder='Email', required='', autofocus='')
+            br
+            label.sr-only(for='password') Password
+            input.form-control(name='password' type='password', placeholder='Password', required='')
+            br
+            label.sr-only(for='confirmPassword') Confirm New Password
+            input.form-control(name='confirmPassword' type='password', placeholder='Confirm New Password', required='')
+            br
+            button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign up
+        br
+        br
+        - if (typeof(message) !== 'undefined')
+            div.alert.alert-danger #{message}

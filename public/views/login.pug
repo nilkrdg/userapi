@@ -1,11 +1,10 @@
 extends ../../node_modules/pug-bootstrap/_bootstrap.pug
 append styles
-    // Custom styles for this template
-    link(href='../css/login.css', rel='stylesheet')
+    link(href='../css/style.css', rel='stylesheet')
 block body
-    #signInContainer.container
-        form( class='form-signin' method='post')
-            h2.form-signin-heading Please sign in
+    .container.formContainer
+        form( class='form-signup' method='post')
+            h2.form-signup-heading Sign Up
             br
             label.sr-only(for='username') Username
             - if (typeof(username) !== 'undefined')

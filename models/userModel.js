@@ -31,10 +31,9 @@ let UserModel = new Schema({
     password:{
         type:String,
         required: true,
-        validate: [validatePassword, 'Password is not valid. Please make sure ' +
+        validate: [validatePassword, 'Password is not valid! Please make sure ' +
         'your password has minimum eight characters,' +
-        ' at least one letter,' +
-        ' and one number']
+        ' at least one letter and one number.']
     }
 });
 
