@@ -4,7 +4,7 @@ const HttpStatus = require('http-status-codes');
 const bcrypt = require('bcrypt');
 const config = require('../config');
 const jwt = require('jsonwebtoken');
-
+const SEND_UPDATED_DOC = true;
 let apiRoutes = require('express').Router();
 
 function verifyToken(req, next)
@@ -244,10 +244,16 @@ function getErrorMessage(defaultResponse, error, userRequestData)
 
     if(error.name === 'ValidationError')
     {
-        return {
-            message: error.message,
-            user: userRequestData
+        let response = {
+            message: error.message
         };
+
+        if(userRequestData)
+        {
+            response.user = userRequestData;
+        }
+
+        return response;
     }
 
     let duplicateErrorMessage = getDuplicateErrorMessage(errorMessage);
@@ -269,7 +275,6 @@ function findByIdAndUpdate(req, res)
     delete req.body.oldPassword;
     delete req.body.newPassword;
     delete req.body.confirmPassword;
-    const SEND_UPDATED_DOC = true;
     let userRequestData = req.body;
     User.findByIdAndUpdate(req.params.id, req.body,
         {new: SEND_UPDATED_DOC},
@@ -375,7 +380,7 @@ apiRoutes.route('/images')
     .get((req, res) => {
         verifyToken(req, (err, response) => {
             if (err) {
-                return res.status(err.statusCode).json({message: err.message});
+                //   return res.status(err.statusCode).json({message: err.message});
             }
 
             //Fetch images from database
@@ -392,6 +397,105 @@ apiRoutes.route('/images')
                 }
             });
         });
+    });
+
+apiRoutes.route('/images/:id')
+    .get((req, res) => {
+        verifyToken(req, (err, response) => {
+            if (err) {
+                return res.status(err.statusCode).json({message: err.message});
+            }
+
+            Image.findById(req.params.id, (err, img) => {
+                    if (err){
+                        console.log("get image " +err);
+                        const response = {message: 'Operation failed!'};
+                        return res.status(HttpStatus.BAD_REQUEST).send(response);
+                    }
+                    else if(!img)
+                    {
+                        let response = {
+                            message:  'Image not found'
+                        };
+                        return res.status(HttpStatus.NOT_FOUND).json(response);
+                    }
+                    return res.status(HttpStatus.OK).json(img);
+                }
+            );
+        });
+    })
+    .delete((req, res) => {
+        verifyToken(req, (err, response) => {
+            if (err) {
+                return res.status(err.statusCode).json({message: err.message});
+            }
+
+            Image.findByIdAndRemove(req.params.id, (err, img) => {
+                if (err) {
+                    let response = {
+                        message: 'Delete operation failed.',
+                        img: img._id
+                    };
+                    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(response);
+                }
+                else if (!img) {
+                    let response = {
+                        message: "Image not found",
+                        id: req.params.id
+                    };
+                    return res.status(HttpStatus.NOT_FOUND).json(response);
+                }
+                let response = {
+                    message: "Image has been successfully deleted",
+                    id: img._id
+                };
+                return res.status(HttpStatus.OK).json(response);
+            });
+
+        });
+    })
+    .patch((req, res) => {
+        verifyToken(req, (err, response) => {
+            if (err) {
+                return res.status(err.statusCode).json({message: err.message});
+            }
+
+            Image.findByIdAndUpdate(req.params.id, req.body,
+                {new: SEND_UPDATED_DOC},
+                (err, img) => {
+                    if (err){
+                        console.log("update image " +err);
+                        const defaultMessage = 'Update operation failed!';
+                        let response = getErrorMessage(defaultMessage, err.message);
+                        if(response.message === defaultMessage)
+                        {
+                            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send(response);
+                        }
+                        else{
+                            return res.status(HttpStatus.BAD_REQUEST).send(response);
+                        }
+                    }
+                    else if(!img)
+                    {
+                        let response = {
+                            message:  HttpStatus.getStatusText(HttpStatus.NOT_FOUND)
+                        };
+                        return res.status(HttpStatus.NOT_FOUND).json(response);
+                    }
+                    return res.status(HttpStatus.OK).json(img);
+                }
+            );
+
+        });
+    });
+
+//All others
+apiRoutes.route('*')
+    .get((req, res) => {
+        let response = {
+            message:  HttpStatus.getStatusText(HttpStatus.NOT_FOUND)
+        };
+        return res.status(HttpStatus.NOT_FOUND).json(response);
     });
 
 module.exports = apiRoutes;
