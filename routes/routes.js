@@ -1,10 +1,10 @@
-const User = require('../models/userModel');
-const rp = require('request-promise');
-const HttpStatus = require('http-status-codes');
-const config = require('../config');
-const multer  = require('multer');
-const base64Encoder = require('../base64Encoder');
-const fs = require('fs');
+const User = require('../models/userModel'),
+    requestPromise = require('request-promise'),
+    HttpStatus = require('http-status-codes'),
+    config = require('../config'),
+    multer = require('multer'),
+    base64Encoder = require('../utils/base64Encoder'),
+    fs = require('fs');
 
 //create multer object to save images
 const storage = multer.diskStorage({
@@ -75,7 +75,7 @@ routes.route('/allUsers')
         }
 
         let options = getHttpRequestOptions('/api/users', 'GET', null, null, req.session.token);
-        rp(options)
+        requestPromise(options)
             .then(function (response) {
                 res.locals.session = req.session;
                 res.render('allUsers', {users: response});
@@ -116,7 +116,7 @@ routes.route('/')
         }
 
         let options = getHttpRequestOptions('/api/login', 'POST', null, req.body, null);
-        rp(options)
+        requestPromise(options)
             .then(function (response) {
                 //Start new session
                 startSession(req, res, response.user, response.token);
@@ -177,7 +177,7 @@ routes.route('/signup')
         }
 
         let options = getHttpRequestOptions('/api/users', 'POST', null, req.body, req.session.token);
-        rp(options)
+        requestPromise(options)
             .then(function () {
                 //Redirect to main page for login
                 res.redirect('/');
@@ -228,7 +228,7 @@ routes.route('/images')
             //Send message to REST api to save the image in database
             let options = getHttpRequestOptions('/api/images', 'POST', null, requestMessage, req.session.token);
 
-            rp(options)
+            requestPromise(options)
                 .then(function (response) {
                     console.log(response);
                     //Save image file name in user collection to display
@@ -262,7 +262,7 @@ routes.route('/images')
             return;
         }
         let options = getHttpRequestOptions('/api/images', 'GET', null, null, req.session.token);
-        rp(options)
+        requestPromise(options)
             .then(function (images) {
                 res.locals.session = req.session;
 
@@ -307,7 +307,7 @@ routes.route('/user/:id')
             return;
         }
         let options = getHttpRequestOptions('/api/users', 'PATCH', req.body.id, req.body, req.session.token);
-        rp(options)
+        requestPromise(options)
             .then(function (user) {
                 req.session.user = user;
                 res.locals.session = req.session;
@@ -331,7 +331,7 @@ routes.route('/user/:id')
         }
 
         let options = getHttpRequestOptions('/api/users', 'DELETE', req.session.user._id, null, req.session.token);
-        rp(options)
+        requestPromise(options)
             .then(function () {
                 deleteSession(req, res);
                 res.redirect('/');
