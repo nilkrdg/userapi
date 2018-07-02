@@ -342,4 +342,11 @@ routes.route('/user/:id')
             });
     });
 
+//All others
+routes.route('*')
+    .get((req, res) => {
+
+        res.render('error', {errorStatusCode: HttpStatus.NOT_FOUND});
+    });
+
 module.exports = routes;

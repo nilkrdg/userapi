@@ -46,9 +46,5 @@ app.use('/api', apiRoutes);
 //Connect all other routes
 app.use('/', routes);
 
-app.use(function(req, res){
-    res.render('error', {message: HttpStatus.NOT_FOUND+' '+HttpStatus.getStatusText(HttpStatus.NOT_FOUND)});
-});
-
 app.listen(port, () => console.log("Server is listening on port "+port+" ..."));
 
