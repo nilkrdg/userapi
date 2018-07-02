@@ -34,6 +34,11 @@ Run the following comment on the cloned directory.
 
 `npm start`
 
+## Connect to the web application
+Go to the following address. This will show the login page of the web application. If a session started it will display welcome page.
+
+`http://localhost:8080`
+
 ### Authors
 
 Nil Karadağ
