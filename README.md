@@ -39,6 +39,9 @@ Go to the following address. This will show the login page of the web applicatio
 
 `http://localhost:8080`
 
+### Tools
+In order to test REST API postman chrome extension is used.
+
 ### Authors
 
 Nil Karadağ
