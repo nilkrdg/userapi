@@ -1,14 +1,13 @@
-const express = require('express');
+const express = require('express'),
     mongoose = require('mongoose'),
     bodyParser = require('body-parser'),
     session = require('express-session'),
     routes = require('./routes/routes'),
     apiRoutes = require('./routes/apiRoutes'),
     methodOverride = require('method-override'),
-    config = require('./config'),
-    HttpStatus = require('http-status-codes');
+    config = require('./config');
 
-
+//Connect to MongoDB
 mongoose.connect('mongodb://localhost/userAPI');
 
 const app = express();
