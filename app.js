@@ -2,25 +2,27 @@ const express = require('express');
     mongoose = require('mongoose'),
     bodyParser = require('body-parser'),
     session = require('express-session'),
-    flash = require('connect-flash'),
     routes = require('./routes/routes'),
     apiRoutes = require('./routes/apiRoutes'),
     methodOverride = require('method-override'),
+    config = require('./config'),
     HttpStatus = require('http-status-codes');
 
 
 mongoose.connect('mongodb://localhost/userAPI');
 
 const app = express();
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || config.port;
 
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 
-//To show messages after redirect
-app.use(flash());
-
-app.use(session({ secret: 'example' }));
+//Set session variable
+app.use(session({
+    secret: config.secret,
+    proxy: true,
+    resave: true,
+    saveUninitialized: true }));
 
 app.use(express.static(__dirname + '/public' ));
 
@@ -48,5 +50,5 @@ app.use(function(req, res){
     res.render('error', {message: HttpStatus.NOT_FOUND+' '+HttpStatus.getStatusText(HttpStatus.NOT_FOUND)});
 });
 
-app.listen(port, () => console.log("gulp is running : listening on port "+port));
+app.listen(port, () => console.log("Server is listening on port "+port+" ..."));
 
