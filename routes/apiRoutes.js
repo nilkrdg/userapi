@@ -361,26 +361,35 @@ apiRoutes.route('/images')
 
             //Remove previous image
             Image.remove({userId: image.userId}, (err, img) => {
-
-                //Save new image as encoded base64
-                image.save((err, img) => {
-                    if (err || !img) {
-                        console.log(err);
-                        let response = {message: 'Image save failed'};
-                        return res.status(HttpStatus.BAD_REQUEST).json(response);
-                    }
-                    else {
-                        let response = {message: 'Image save success'};
-                        return res.status(HttpStatus.OK).json(response);
-                    }
-                });
+                if(err)
+                {
+                    let response = {message: 'Image save failed'};
+                    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(response);
+                }
+                else {
+                    //Save new image as encoded base64
+                    image.save((err, img) => {
+                        if (err || !img) {
+                            console.log(err);
+                            let response = {message: 'Image save failed'};
+                            return res.status(HttpStatus.BAD_REQUEST).json(response);
+                        }
+                        else {
+                            let response = {
+                                message: 'Image save success',
+                                id: img._id
+                            };
+                            return res.status(HttpStatus.OK).json(response);
+                        }
+                    });
+                }
             });
         });
     })
     .get((req, res) => {
         verifyToken(req, (err, response) => {
             if (err) {
-                //   return res.status(err.statusCode).json({message: err.message});
+                return res.status(err.statusCode).json({message: err.message});
             }
 
             //Fetch images from database
